@@ -1,0 +1,23 @@
+﻿.main-wrapper {
+    width: min(60rem, 100%);
+    margin: 0 auto;
+}
+
+.custom-shifts-wrapper {
+    display: grid;
+    justify-content: center;
+    grid-template-columns: repeat(7, 2.5rem);
+    gap: 0.5rem 0.125rem;
+}
+
+@media only screen and (min-width: 768px) {
+    .custom-shifts-wrapper {
+        grid-template-columns: repeat(14, 2.5rem);        
+    }
+}
+
+.days-on-and-off {
+    margin-top: 2rem;
+    font-weight: 700;
+    font-size: 1.5rem;
+}

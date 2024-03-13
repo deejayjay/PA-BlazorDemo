@@ -1,0 +1,45 @@
+﻿@using BlazorDemo.Data
+
+<h2>Student List</h2>
+<table class="table table-bordered">
+    <thead>
+        <tr class="text-white bg-dark">
+            <th class="w-50">Name</th>
+            <th class="w-25">Age</th>
+            <th class="w-25 text-center"></th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (StudentList.Count() > 0)
+        {
+            @foreach (var student in StudentList)
+            {
+                <tr>
+                    <td>@student.FullName</td>
+                    <td>@student.Age</td>
+                    <td class="text-center">
+                        <RadzenButton Icon="delete" ButtonStyle="ButtonStyle.Danger" Size="ButtonSize.ExtraSmall" ButtonType="ButtonType.Button" Click="@(() => OnDeleteClick(student))" />
+                    </td>
+                </tr>
+            }            
+        }
+        else
+        {
+            <tr>
+                <td colspan="3" class="fst-italic text-secondary text-center">No students to display</td>
+            </tr>
+        }        
+    </tbody>
+</table>
+@code {
+    [Parameter]
+    public List<Student> StudentList { get; set; } = new();
+    
+    [Parameter]
+    public EventCallback<Student> OnDeleteStudent { get; set; }
+
+    protected async Task OnDeleteClick(Student deletedStudent)
+    {
+        await OnDeleteStudent.InvokeAsync(deletedStudent);
+    }
+}

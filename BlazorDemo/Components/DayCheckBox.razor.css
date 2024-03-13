@@ -1,0 +1,41 @@
+﻿.day-checkbox-wrapper {
+    position: relative;
+    display: grid;
+    place-items: center;
+}
+
+::deep .day-checkbox {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: -1;
+}
+
+::deep .day-checkbox-label {
+    padding: 0.25rem;
+    background: var(--checkbox-seconday);
+    color: var(--checkbox-primary);
+    border: 1px solid var(--checkbox-border);
+    display: grid;
+    place-items: center;
+    line-height: 1;
+    transition: color 250ms, background 250ms, border-color 250ms;
+    user-select: none;
+}
+
+::deep .day-checkbox-daypart {
+    display: block;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+::deep .day-checkbox-monthpart {
+    font-size: 0.875rem;
+}
+
+::deep .day-checkbox:has(input[type=checkbox]:checked) ~ .day-checkbox-label {
+    background: var(--checkbox-primary);
+    color: var(--checkbox-seconday);
+    border-color: var(--checkbox-primary);
+}

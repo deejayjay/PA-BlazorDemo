@@ -1,0 +1,45 @@
+﻿@using BlazorDemo.Data
+
+<RadzenTemplateForm TItem="Student" Data="@_model" Submit="@OnSubmit">
+    <h2>Add New Student</h2>
+    <RadzenStack Gap="1rem">
+        <RadzenFormField Text="First Name" Variant="Variant.Outlined">
+            <ChildContent>
+                <RadzenTextBox Name="FirstName" @bind-Value="@_model.FirstName" />
+            </ChildContent>
+            <Helper>
+                <RadzenRequiredValidator Component="FirstName" Text="First name is required." />
+            </Helper>
+        </RadzenFormField>
+        <RadzenFormField Text="Last Name" Variant="Variant.Outlined">
+            <ChildContent>
+                <RadzenTextBox Name="LastName" @bind-Value="@_model.LastName" />
+            </ChildContent>
+            <Helper>
+                <RadzenRequiredValidator Component="LastName" Text="Last name is required." />
+            </Helper>
+        </RadzenFormField>
+        <RadzenFormField Text="Age" Variant="Variant.Outlined">
+            <ChildContent>
+                <RadzenNumeric ShowUpDown="false" Name="Age" TValue="int" @bind-Value="@_model.Age" />
+            </ChildContent>
+            <Helper>
+                <RadzenNumericRangeValidator Component="Age" Min="1" Max="100" Text="Age should be between 1 and 100" Style="position: absolute" />
+            </Helper>
+        </RadzenFormField>
+        <RadzenButton ButtonType="ButtonType.Submit" Text="Add Student" class="w-50 mx-auto"></RadzenButton>
+    </RadzenStack>
+</RadzenTemplateForm>
+
+@code {
+    [Parameter]
+    public EventCallback<Student> OnAddStudent { get; set; }
+
+    Student _model = new();    
+
+    protected async Task OnSubmit(Student inputStudent)
+    {
+        await OnAddStudent.InvokeAsync(inputStudent);
+        _model.ResetToDefault();
+    }
+}

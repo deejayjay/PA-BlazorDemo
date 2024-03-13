@@ -1,0 +1,116 @@
+﻿@page "/"
+
+<PageTitle>Index</PageTitle>
+
+<div class="main-wrapper">
+    <h1 class="text-center">Custom Shiftcycle</h1>
+
+    <RadzenRow AlignItems="AlignItems.End" Wrap="FlexWrap.Wrap" Gap="1rem" Class="rz-p-sm-12">
+        <RadzenColumn Size="12" SizeMD="6">
+            <RadzenFormField Text="Shiftcycle Start Date" class="w-100">
+                <RadzenDatePicker TValue="DateTime"
+                                  Value="@_startDateTime"
+                                  Change="@(args => HandleShiftCycleStartDateChange(args))"
+                                  DateFormat="MM/dd/yyyy"
+                                  Name="ShiftCycleStartDate" />
+            </RadzenFormField>
+        </RadzenColumn>
+        <RadzenColumn Size="12" SizeMD="6">
+            <RadzenFormField Text="Shiftcycle Start Date" class="w-100">
+                <RadzenNumeric TValue="int"
+                               Value="@_numberOfDays"
+                               Change="@HandleNumberOfDaysChange" />
+            </RadzenFormField>
+        </RadzenColumn>
+    </RadzenRow>
+
+    <div class="mt-4 mb-3 d-flex justify-content-center gap-3">
+        <RadzenButton Shade="Shade.Light"
+                      Click="@HandleSelectAll"
+                      Disabled="@(_areAllDaysOn)"
+                      Text="Select All"
+                      ButtonStyle="ButtonStyle.Dark" />
+
+        <RadzenButton Shade="Shade.Light"
+                      Click="@HandleUnselectAll"
+                      Disabled="@(!_areAllDaysOn)"
+                      Text="Unselect All"
+                      ButtonStyle="ButtonStyle.Dark" />
+    </div>
+
+    <div class="custom-shifts-wrapper">
+        @foreach (var date in _scheduleDates)
+        {
+            <DayCheckBox DisplayDate="@date"
+                         IsChecked="@_areAllDaysOn"
+                         OnDayChecked="@UpdateDaysOn" />
+        }
+    </div>
+
+    <div class="days-on-and-off d-flex justify-content-center gap-3">
+        <div class="text-success">Days On: @_daysOn</div>
+        <div class="text-danger">Days Off: @(_scheduleDates.Count() - _daysOn)</div>
+    </div>
+</div>
+
+@code {
+    DateTime _startDateTime = DateTime.Now;
+    List<DateOnly> _scheduleDates = new List<DateOnly>();
+
+    int _numberOfDays = 84;
+
+    private DateOnly _startDate => DateOnly.FromDateTime(_startDateTime);
+
+    int _daysOn = 0;
+    bool _areAllDaysOn = false;
+
+    protected override void OnInitialized()
+    {
+        GenerateDaysSelector();
+    }
+
+    private void GenerateDaysSelector()
+    {
+        _scheduleDates.Clear();
+        _scheduleDates.Add(_startDate);
+
+        for (int i = 1; i < _numberOfDays; i++)
+        {
+            _scheduleDates.Add(_startDate.AddDays(i));
+        }
+    }
+
+    protected void UpdateDaysOn(bool isChecked)
+    {
+        if (isChecked)
+        {
+            _daysOn++;
+            return;
+        }
+        _daysOn--;
+    }
+
+    protected void HandleSelectAll()
+    {
+        _areAllDaysOn = true;
+        _daysOn = 84;
+    }
+
+    protected void HandleUnselectAll()
+    {
+        _areAllDaysOn = false;
+        _daysOn = 0;
+    }
+
+    protected void HandleNumberOfDaysChange(int days)
+    {
+        _numberOfDays = days;
+        GenerateDaysSelector();
+    }
+
+    protected void HandleShiftCycleStartDateChange(DateTime? date)
+    {
+        _startDateTime = (DateTime)date!;
+        GenerateDaysSelector();
+    }
+}

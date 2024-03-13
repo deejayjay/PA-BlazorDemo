@@ -1,0 +1,54 @@
+﻿@page "/confirm-save"
+
+@inject DialogService DialogService
+
+<h1 class="display-6 text-center">@fileName</h1>
+<p class="lead text-center">@feedback</p>
+
+<div class="rz-p-12 rz-text-align-center">
+    <RadzenButton Text="Save" ButtonStyle="ButtonStyle.Primary" Click="@OpenFileSaveDialog" />
+</div>
+
+@code {
+    string fileName = "File 1";
+    string feedback = string.Empty;
+
+    public async Task OpenFileSaveDialog()
+    {
+        feedback = string.Empty;
+
+        var onSaveAsNewFileCallback = EventCallback.Factory.Create<string>(this, async (fileNameValue) => await HandleSaveAsNewFile((string)fileNameValue));
+        var onOverwriteExistingFileCallback = EventCallback.Factory.Create<string>(this, async (fileNameValue) => await HandleOverwriteExistingFile((string)fileNameValue));
+
+        await DialogService.OpenAsync<FileSaveDialog>("Confirm Payment Summary Save",
+               new Dictionary<string, object>()
+                   {
+                   { "FileName", fileName },
+                   { "Note", "* You will be saving this file to the claim. Please verify that you are doing it for the correct claim." },
+                   { "OnSaveAsNewFile", onSaveAsNewFileCallback },
+                   { "OnOverwriteExistingFile", onOverwriteExistingFileCallback }
+                   },
+               new DialogOptions
+                   {
+                       Resizable = true,
+                       Draggable = true,
+                       CloseDialogOnEsc = true,
+                       CloseDialogOnOverlayClick = true,
+                       CssClass="file-save-dialog"
+                   });
+    }
+
+    private Task HandleSaveAsNewFile(string newFileName)
+    {
+        fileName = newFileName;
+        feedback = $"New file '{fileName}' saved successfully!";
+        return Task.CompletedTask;
+    }
+
+    private Task HandleOverwriteExistingFile(string existingFileName)
+    {
+        fileName = existingFileName;
+        feedback = $"File '{fileName}' overwritten successfully!";
+        return Task.CompletedTask;
+    }
+}

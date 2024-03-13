@@ -1,0 +1,93 @@
+﻿@page "/file-input"
+
+<div class="container">
+    <h3>File Input</h3>
+
+    <div class="row px-3">
+        <div class="col-lg-6 offset-lg-3 p-3">
+            <RadzenCard>
+                @for (var index = 0; index < attachments.Count; index++)
+                {
+                    var currentIndex = index;
+                    var item = attachments[currentIndex];
+
+                    <RadzenFileInput ChooseText="Upload Screenshot"
+                                     @bind-Value="item.FileContent"
+                                     @bind-FileName="item.FileName"
+                                     @bind-FileSize="item.FileSize"
+                                     TValue="string"
+                                     class="w-100"
+                                     Change=@(args => OnChange(args, currentIndex))
+                                     Error=@(args => OnError(args, "FileInput"))
+                                     InputAttributes="@(new Dictionary<string,object>(){ { "aria-label", "select file" }})" />
+                }
+            </RadzenCard>
+            <RadzenButton Click="@AddAttachmentRow" Text="Add Row" ButtonStyle="ButtonStyle.Primary" />
+        </div>
+
+        <pre>@fileContent</pre>
+
+        @if (!string.IsNullOrWhiteSpace(fileContent))
+        {
+            <div>
+                <RadzenButton Click="@OnConvertToByteArray" Text="Convert to Byte []" ButtonStyle="ButtonStyle.Primary" />
+            </div>
+            <pre>@fileContentBytes</pre>
+        }
+    </div>
+</div>
+
+@code {
+    string fileContent = string.Empty;
+    string fileName = string.Empty;
+    long? fileSize = null;
+    byte[]? fileContentBytes;
+
+    List<Attachment> attachments = new List<Attachment> { new Attachment() };
+
+    void OnChange(string value, int index)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            if (attachments.Count == 1)
+            {
+                attachments[index].FileContent = null!;
+                return;
+            }
+
+            attachments.RemoveAt(index);
+            return;
+        }
+
+        attachments[index].FileContent = value;
+    }
+
+    private void AddAttachmentRow()
+    {
+        attachments.Add(new Attachment());
+    }
+
+    void OnError(UploadErrorEventArgs args, string name)
+    {
+        Console.WriteLine($"{args.Message}");
+    }
+
+    protected void OnConvertToByteArray()
+    {
+        // if (!string.IsNullOrWhiteSpace(fileContent))
+        // {
+        //     var trimmedFileContent = fileContent.Split(",")[1];
+
+        //     fileContentBytes = Convert.FromBase64String(trimmedFileContent);
+        // }
+    }
+
+    public class Attachment
+    {
+        public string FileName { get; set; } = null!;
+
+        public long? FileSize { get; set; }
+
+        public string FileContent { get; set; } = null!;
+    }
+}

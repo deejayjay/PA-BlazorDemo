@@ -1,0 +1,76 @@
+﻿@inject DialogService DialogService
+
+<RadzenRow AlignItems="AlignItems.End" Wrap="FlexWrap.Wrap" Gap="1rem" class="mb-5">
+    <RadzenColumn Size="12">
+        <p class="file-save-dialog-note text-secondary">@Note</p>
+    </RadzenColumn>
+    <RadzenColumn Size="12">
+        <RadzenFormField Text="File Name *" class="w-100">
+            <ChildContent>
+                <RadzenTextBox Value="@FileName" @oninput="@(args => OnFileNameChange(args.Value))" class="w-100" />
+            </ChildContent>
+            <Helper>
+                @if (string.IsNullOrWhiteSpace(FileName))
+                {
+                    <RadzenText Text="File Name is required" class="rz-message rz-messages-error position-absolute" />
+                }
+            </Helper>
+        </RadzenFormField>
+    </RadzenColumn>
+</RadzenRow>
+<div class="action-buttons">
+    <div>
+        <RadzenButton Click="@HandleSaveAsNewFile"
+                      class="action-button"
+                      Text="Save as new file"
+                      ButtonStyle="ButtonStyle.Primary"
+                      Disabled="@(string.IsNullOrWhiteSpace(FileName))" />
+
+        <RadzenButton Click="@HandleOverwriteExistingFile"
+                      class="action-button"
+                      Text="Overwrite file"
+                      ButtonStyle="ButtonStyle.Primary"
+                      Disabled="@(string.IsNullOrWhiteSpace(FileName))" />
+    </div>
+
+    <RadzenButton Click="@HandleCancelClick"
+                  class="action-button"
+                  Text="Cancel"
+                  ButtonStyle="ButtonStyle.Secondary" />
+</div>
+
+@code {
+    [Parameter]
+    public string FileName { get; set; } = string.Empty;
+
+    [Parameter]
+    public string Note { get; set; } = string.Empty;
+
+    [Parameter]
+    public EventCallback<string> OnSaveAsNewFile { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnOverwriteExistingFile { get; set; }
+
+    private async Task HandleSaveAsNewFile()
+    {
+        await OnSaveAsNewFile.InvokeAsync(FileName); // Pass FileName as argument
+        DialogService.Close(true);
+    }
+
+    private async Task HandleOverwriteExistingFile()
+    {
+        await OnOverwriteExistingFile.InvokeAsync(FileName); // Pass FileName as argument
+        DialogService.Close(true);
+    }
+
+    private void HandleCancelClick()
+    {
+        DialogService.Close(true);
+    }
+
+    private void OnFileNameChange(object? value)
+    {
+        FileName = value?.ToString() ?? string.Empty;
+    }
+}

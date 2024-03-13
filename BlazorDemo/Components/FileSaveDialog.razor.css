@@ -1,0 +1,21 @@
+﻿.file-save-dialog-note {
+    font-style: italic;
+    font-size: 0.875rem;
+}
+
+::deep .action-button {
+    width: 100%;
+    margin-top: 0.5rem;
+}
+
+@media only screen and (min-width: 640px) {
+    .action-buttons {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    ::deep .action-button {
+        width: initial;
+        margin-top: initial;
+    }
+}
